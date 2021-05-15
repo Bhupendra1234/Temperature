@@ -1,122 +1,84 @@
 import React from "react";
-import "./App.css";
-import Form from "./Components/form"
-import Weather from "./Components/Weather";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "weather-icons/css/weather-icons.css";
+import { Chart } from "react-google-charts";
 
-const Api_Key = "f7f1c145d1528e529edc92d020733fdd";
 
-class App extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      city: undefined,
-      country: undefined,
-      icon: undefined,
-      main: undefined,
-      celsius: undefined,
-      temp_max: null,
-      temp_min: null,
-      description: "",
-      error: false
-    };
 
-    this.weatherIcon = {
-      Thunderstorm: "wi-thunderstorm",
-      Drizzle: "wi-sleet",
-      Rain: "wi-storm-showers",
-      Snow: "wi-snow",
-      Atmosphere: "wi-fog",
-      Clear: "wi-day-sunny",
-      Clouds: "wi-day-fog"
-    };
+const Charte =()=> {
+
+
+  const Highest =[
+    ['Month' ,'Highest'],['Jan', 20],['Feb', 24 ],['Mar', 30 ],['Apr', 37],['May', 40], ['Jun', 39 ], ['Jul', 35], ['Aug', 34],
+    ['Set', 34], ['Oct', 33],['Nov', 28],['Dec', 22], 
+  ]
+  const high_low =[
+    ['Month' ,'high','low'],['Jan', 20,8],['Feb', 24 ,11], ['Mar', 30 ,16], ['Apr', 37, 23], ['May', 40,27],
+    ['Jun', 39 ,28], ['Jul', 35, 28], ['Aug', 34, 27], ['Set', 34, 25], ['Oct', 33,21], ['Nov', 28,14], ['Dec', 22,9]
+  ]
+ const comp =[
+  ['Month', 'Comparision of Delhi and Houston', 'Delhi_Low', 'Houston_High', 'Houston_Low'],
+  ['Jan', 20,8 ,16,7], ['Feb', 24 ,11,18,19], ['Mar', 30 ,16,21,13], ['Apr', 37, 23,25,16],
+  ['May', 40,27,28,20],  ['Jun', 39 ,28,31,23],['Jul', 35, 28,33,24],['Aug', 34, 27,30,22],
+  ['Set', 34, 25,30,22],['Oct', 33,21,26,17],['Nov', 28,14,21,12], ['Dec', 22,9,17,9]
+]
+
+  const mystyle={
+    display: 'block',
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    width:'60%',
+    textAlign:'center',
+    fontFamily: "Montserrat sans-serif",
+    
   }
+return(
+  <>
+      <div style={mystyle}>
+          <div style={{padding:'20px'}}>
+              <h2>Delhi Temperature As Highest</h2>
+                <Chart
+                  width={'100%'}
+                  height={350}
+                  chartType="Bar"
+                  loader={<div>Loading Chart</div>}
+                  data={Highest}
+                  options={{
+                    legend: 'none',
+                  }}
+                  rootProps={{ 'data-testid': '3' }}
+                />
+                </div>
+            <div style={{padding:'20px'}}>
+             <h2>High And Low Temperature Of Delhi</h2>
+              <Chart
+                  width={'100%'}
+                  height={350}
+                  chartType="Bar"
+                  data={high_low}
+                  options={{
+                    legend: 'none',
+                  }}
+                  rootProps={{ 'data-testid': '1' }}
+                />
+                </div>
+                <div style={{padding:'20px'}}>
+                <h2>Comparision Of High And Low Temperature Of Delhi And Houston</h2>
+                <Chart
+                  width={'100%'}
+                  height={350}
+                  chartType="CandlestickChart"
+                  data={comp}
+                  options={{
+                    legend: 'none',
+                  }}
+                  rootProps={{ 'data-testid': '1' }}
+                />
+              </div>
+       </div>
+         </> 
+        )
+       
 
-  get_WeatherIcon(icons, rangeId) {
-    switch (true) {
-      case rangeId >= 200 && rangeId < 232:
-        this.setState({ icon: icons.Thunderstorm });
-        break;
-      case rangeId >= 300 && rangeId <= 321:
-        this.setState({ icon: icons.Drizzle });
-        break;
-      case rangeId >= 500 && rangeId <= 521:
-        this.setState({ icon: icons.Rain });
-        break;
-      case rangeId >= 600 && rangeId <= 622:
-        this.setState({ icon: icons.Snow });
-        break;
-      case rangeId >= 701 && rangeId <= 781:
-        this.setState({ icon: icons.Atmosphere });
-        break;
-      case rangeId === 800:
-        this.setState({ icon: icons.Clear });
-        break;
-      case rangeId >= 801 && rangeId <= 804:
-        this.setState({ icon: icons.Clouds });
-        break;
-      default:
-        this.setState({ icon: icons.Clouds });
-    }
-  }
 
-  calCelsius(temp) {
-    let cell = Math.floor(temp - 273.15);
-    return cell;
-  }
-
-  getWeather = async e => {
-    e.preventDefault();
-
-    const country = e.target.elements.country.value;
-    const city = e.target.elements.city.value;
-
-    if (country && city) {
-      const api_call = await fetch(
-        `http://api.openweathermap.org/data/2.5/weather?q=${city},${country}&appid=${Api_Key}`
-      );
-
-      const response = await api_call.json();
-
-      this.setState({
-        city:  `${response.name}, ${response.sys.country}`,
-        country: response.sys.country,
-        main: response.weather[0].main,
-        celsius: this.calCelsius(response.main.temp),
-        temp_max: this.calCelsius(response.main.temp_max),
-        temp_min: this.calCelsius(response.main.temp_min),
-        description: response.weather[0].description,
-        error: false
-      });
-
-      // seting icons
-      this.get_WeatherIcon(this.weatherIcon, response.weather[0].id);
-
-      console.log(response);
-    } else {
-      this.setState({
-        error: true
-      });
-    }
-  };
-
-  render() {
-    return (
-      <div className="App">
-        <Form loadweather={this.getWeather} error={this.state.error} />
-        <Weather
-          cityname={this.state.city}
-          weatherIcon={this.state.icon}
-          temp_celsius={this.state.celsius}
-          temp_max={this.state.temp_max}
-          temp_min={this.state.temp_min}
-          description={this.state.description}
-        />
-      </div>
-    );
-  }
 }
-
-export default App;
+export default Charte
 
