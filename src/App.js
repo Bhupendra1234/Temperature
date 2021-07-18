@@ -1,21 +1,33 @@
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form';
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+
+const schema = yup.object().shape({
+  name: yup.string().required("please enter a name"),
+  email: yup.string().email().required("please enter a email address"),
+  password: yup.string().min(4).max(15).required("please enter a password"),
+  confirm_passowrd: yup.string().oneOf([yup.ref("password"), null])
+});
 const App = () => {
 
   const [user, setuser] = useState('')
-  const { register, handleSubmit, formState: { errors }, } = useForm();
+  const { register, handleSubmit, formState: { errors }, } = useForm({
+    resolver: yupResolver(schema)
+  });
 
-  const onSubmit = (data) =>{ console.log(data,errors);
+  const onSubmit = (data) => {
+    console.log(data, errors);
 
     let user_type = 'EMPLOYEE'
     user ? user_type = 'EMPLOYEE' : user_type = 'EMPLOYER'
     // dispatch(userRegistration(data))
-  
+
   }
- 
+
 
   return (
-    <div className="account-entry"  style={{margin:'0 auto'}}>
+    <div className="account-entry" style={{ margin: '0 auto' }}>
       <div className="modal fade" id="exampleModalLong2" tabIndex="-1" role="dialog" aria-hidden="true">
         <div className="modal-dialog" role="document">
           <div className="modal-content">
@@ -25,20 +37,21 @@ const App = () => {
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            {/* {authSuccess &&
+            {errors.name &&
               <div className="jy-alert success-alert">
                 <div className="icon">
                   <i className="fas fa-check-circle"></i>
                 </div>
-                <p>Success! {authMessage}</p>
+                <p>Success! {errors.name?.message}</p>
               </div>}
-            {!authSuccess && Object.keys(authData).length === 0 && authMessage &&
+            {/* {!authSuccess && Object.keys(authData).length === 0 && authMessage && */}
+            {errors.password &&
               <div className="jy-alert danger-alert">
                 <div className="icon">
                   <i className="fas fa-check-circle"></i>
                 </div>
-                <p>Danger!  {authMessage}</p>
-              </div>} */}
+              <p>Danger!   {errors.name?.message}</p>
+              </div>}
             <div className="modal-body">
               <div className="account-type">
                 <a href="#" className="candidate-acc active" onClick={() => setuser(!user)}><i data-feather="user"></i>Candidate</a>
@@ -46,22 +59,22 @@ const App = () => {
               </div>
               <form onSubmit={handleSubmit(onSubmit)} >
                 <div className="form-group">
-                  <input type="text" {...register('name', { required: true })}   placeholder={user ? "Candidate Name" : "Employer Name"} className="form-control" />
-                  { errors.name && <p style={{ color: 'red' }}>please enter a name </p>}
+                  <input type="text" {...register('name')} placeholder={user ? "Candidate Name" : "Employer Name"} className="form-control" />
+                  {errors.name && <p style={{ color: 'red' }}> {errors.name?.message} </p>}
                 </div>
 
                 <div className="form-group">
-                  <input type="email"   {...register('email', { required: true })} placeholder="Email Address" className="form-control" />
+                  <input type="email"   {...register('email')} placeholder="Email Address" className="form-control" />
                 </div>
-                {errors.email && <p style={{ color: 'red' }}>please enter email address </p>}
+                {errors.email && <p style={{ color: 'red' }}> {errors.email?.message} </p>}
                 <div className="form-group">
-                  <input type="password"   {...register('password', { required: true })} placeholder="Password" className="form-control" />
-                  {errors.password &&  <p style={{ color: 'red' }}>please enter a confirm password </p>}
+                  <input type="password"   {...register('password')} placeholder="Password" className="form-control" />
+                  {errors.password && <p style={{ color: 'red' }}> {errors.password?.message} </p>}
 
                 </div>
                 <div className="form-group">
-                  <input type="password"  {...register('confirm_passowrd', { required: true })} placeholder="Confirm Password" className="form-control" />
-                  {errors.confirm_passowrd && <p style={{ color: 'red' }}>please enter a confirm password </p>}
+                  <input type="password"  {...register('confirm_passowrd')} placeholder="Confirm Password" className="form-control" />
+                  {errors.confirm_passowrd && <p style={{ color: 'red' }}> {errors.confirm_passowrd?.message} </p>}
                 </div>
 
                 <div className="more-option terms">
@@ -72,7 +85,7 @@ const App = () => {
                     </label>
                   </div>
                 </div>
-                <button  type="submit" className="button primary-bg btn-block">Register</button>
+                <button type="submit" className="button primary-bg btn-block">Register</button>
               </form>
               <div className="shortcut-login">
                 <span>Or connect with</span>
