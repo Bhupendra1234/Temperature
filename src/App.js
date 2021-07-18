@@ -1,84 +1,96 @@
-import React from "react";
-import { Chart } from "react-google-charts";
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form';
+const App = () => {
 
+  const [user, setuser] = useState('')
+  const { register, handleSubmit, formState: { errors }, } = useForm();
 
+  const onSubmit = (data) =>{ console.log(data,errors);
 
-const Charte =()=> {
-
-
-  const Highest =[
-    ['Month' ,'Highest'],['Jan', 20],['Feb', 24 ],['Mar', 30 ],['Apr', 37],['May', 40], ['Jun', 39 ], ['Jul', 35], ['Aug', 34],
-    ['Set', 34], ['Oct', 33],['Nov', 28],['Dec', 22], 
-  ]
-  const high_low =[
-    ['Month' ,'high','low'],['Jan', 20,8],['Feb', 24 ,11], ['Mar', 30 ,16], ['Apr', 37, 23], ['May', 40,27],
-    ['Jun', 39 ,28], ['Jul', 35, 28], ['Aug', 34, 27], ['Set', 34, 25], ['Oct', 33,21], ['Nov', 28,14], ['Dec', 22,9]
-  ]
- const comp =[
-  ['Month', 'Comparision of Delhi and Houston', 'Delhi_Low', 'Houston_High', 'Houston_Low'],
-  ['Jan', 20,8 ,16,7], ['Feb', 24 ,11,18,19], ['Mar', 30 ,16,21,13], ['Apr', 37, 23,25,16],
-  ['May', 40,27,28,20],  ['Jun', 39 ,28,31,23],['Jul', 35, 28,33,24],['Aug', 34, 27,30,22],
-  ['Set', 34, 25,30,22],['Oct', 33,21,26,17],['Nov', 28,14,21,12], ['Dec', 22,9,17,9]
-]
-
-  const mystyle={
-    display: 'block',
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    width:'60%',
-    textAlign:'center',
-    fontFamily: "Montserrat sans-serif",
-    
+    let user_type = 'EMPLOYEE'
+    user ? user_type = 'EMPLOYEE' : user_type = 'EMPLOYER'
+    // dispatch(userRegistration(data))
+  
   }
-return(
-  <>
-      <div style={mystyle}>
-          <div style={{padding:'20px'}}>
-              <h2>Delhi Temperature As Highest</h2>
-                <Chart
-                  width={'100%'}
-                  height={350}
-                  chartType="Bar"
-                  loader={<div>Loading Chart</div>}
-                  data={Highest}
-                  options={{
-                    legend: 'none',
-                  }}
-                  rootProps={{ 'data-testid': '3' }}
-                />
+ 
+
+  return (
+    <div className="account-entry"  style={{margin:'0 auto'}}>
+      <div className="modal fade" id="exampleModalLong2" tabIndex="-1" role="dialog" aria-hidden="true">
+        <div className="modal-dialog" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title"><i data-feather="edit"></i>Registration</h5>
+              <button type="button" className="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            {/* {authSuccess &&
+              <div className="jy-alert success-alert">
+                <div className="icon">
+                  <i className="fas fa-check-circle"></i>
                 </div>
-            <div style={{padding:'20px'}}>
-             <h2>High And Low Temperature Of Delhi</h2>
-              <Chart
-                  width={'100%'}
-                  height={350}
-                  chartType="Bar"
-                  data={high_low}
-                  options={{
-                    legend: 'none',
-                  }}
-                  rootProps={{ 'data-testid': '1' }}
-                />
+                <p>Success! {authMessage}</p>
+              </div>}
+            {!authSuccess && Object.keys(authData).length === 0 && authMessage &&
+              <div className="jy-alert danger-alert">
+                <div className="icon">
+                  <i className="fas fa-check-circle"></i>
                 </div>
-                <div style={{padding:'20px'}}>
-                <h2>Comparision Of High And Low Temperature Of Delhi And Houston</h2>
-                <Chart
-                  width={'100%'}
-                  height={350}
-                  chartType="CandlestickChart"
-                  data={comp}
-                  options={{
-                    legend: 'none',
-                  }}
-                  rootProps={{ 'data-testid': '1' }}
-                />
+                <p>Danger!  {authMessage}</p>
+              </div>} */}
+            <div className="modal-body">
+              <div className="account-type">
+                <a href="#" className="candidate-acc active" onClick={() => setuser(!user)}><i data-feather="user"></i>Candidate</a>
+                <a href="#" className="employer-acc" onClick={() => setuser(!user)} ><i data-feather="briefcase"></i>Employer</a>
               </div>
-       </div>
-         </> 
-        )
-       
+              <form onSubmit={handleSubmit(onSubmit)} >
+                <div className="form-group">
+                  <input type="text" {...register('name', { required: true })}   placeholder={user ? "Candidate Name" : "Employer Name"} className="form-control" />
+                  { errors.name && <p style={{ color: 'red' }}>please enter a name </p>}
+                </div>
 
+                <div className="form-group">
+                  <input type="email"   {...register('email', { required: true })} placeholder="Email Address" className="form-control" />
+                </div>
+                {errors.email && <p style={{ color: 'red' }}>please enter email address </p>}
+                <div className="form-group">
+                  <input type="password"   {...register('password', { required: true })} placeholder="Password" className="form-control" />
+                  {errors.password &&  <p style={{ color: 'red' }}>please enter a confirm password </p>}
 
+                </div>
+                <div className="form-group">
+                  <input type="password"  {...register('confirm_passowrd', { required: true })} placeholder="Confirm Password" className="form-control" />
+                  {errors.confirm_passowrd && <p style={{ color: 'red' }}>please enter a confirm password </p>}
+                </div>
+
+                <div className="more-option terms">
+                  <div className="form-check">
+                    <input className="form-check-input" type="checkbox" value="" id="defaultCheck3" />
+                    <label className="form-check-label" htmlFor="defaultCheck3">
+                      I accept the <a href="#">terms & conditions</a>
+                    </label>
+                  </div>
+                </div>
+                <button  type="submit" className="button primary-bg btn-block">Register</button>
+              </form>
+              <div className="shortcut-login">
+                <span>Or connect with</span>
+                <div className="buttons">
+                  <a href="#" className="facebook"><i className="fab fa-facebook-f"></i>Facebook</a>
+                  <a href="#" className="google"><i className="fab fa-google"></i>Google</a>
+                </div>
+                <p>Already have an account? <a href="#">Login</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  );
 }
-export default Charte
 
+
+
+export default App
